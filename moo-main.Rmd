@@ -15,7 +15,7 @@ params:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 require(quantmod)
-#setwd("./GitHub/moola")
+#setwd("./GitHub/moola/docs")
 s1.price <- round(getSymbols(params$sym.1, src="yahoo", 
                              from=params$begin_date, auto.assign=FALSE), 2)
 s1.last <- last(s1.price)
