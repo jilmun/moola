@@ -1,0 +1,94 @@
+---
+output: 
+  html_document:
+    toc: false
+    toc_float: false
+    code_folding: hide
+params:
+  begin_date: "2015-01-01"
+  sym.1: SBUX
+  sym.2: PNRA
+  sym.3: MSFT
+  sym.4: DIS
+  sym.5: IBM
+---
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+require(quantmod)
+#setwd("./GitHub/moola")
+s1.price <- round(getSymbols(params$sym.1, src="yahoo", 
+                             from=params$begin_date, auto.assign=FALSE), 2)
+s1.last <- last(s1.price)
+s1.price_monthly <- s1.price[endpoints(s1.price, on="months")]
+```
+
+## Stock Prices {.tabset}
+
+### `r params$sym.1`
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+require(dygraphs)
+dygraphs::dygraph(s1.price) %>% dyRangeSelector()
+
+# require(TTR)
+# barChart(s1.price)
+# addMACD()
+# addATR()
+# addBBands()
+# 
+# # add moving average
+# addEMA(n=5, col="white")
+# addEMA(n=20, col="blue")
+```
+
+***
+
+```{r echo=FALSE, message=FALSE}
+require(DT)
+s1.df <- data.frame(s1.price[,1:4])
+DT::datatable(s1.df)
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+require(forecast)
+set.seed(123)
+s1_hi.mdl <- auto.arima(s1.price[,2])
+s1_hi.pred <- forecast(s1_hi.mdl, 30)
+s1_lo.mdl <- auto.arima(s1.price[,3])
+s1_lo.pred <- forecast(s1_lo.mdl, 30)
+```
+
+***
+
+* Most recent price captured on: __`r index(s1.last)`__
+* Stock closed __`r ifelse(Cl(s1.last) > Op(s1.last), 'up', 'down')`__ at __`r Cl(s1.last)`__ dollars per share
+* Next day __high__ forecast is __`r as.numeric(s1_hi.pred$mean)[1]`__
+* Next day __low__ forecast is __`r as.numeric(s1_lo.pred$mean)[1]`__
+
+***
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+require(ggplot2)
+s1.plot <- ggplot(data)
+plot(s1_hi.pred)
+plot(s1_lo.pred)
+```
+
+***
+
+### `r params$sym.2`
+
+***
+
+### `r params$sym.3`
+
+***
+
+### `r params$sym.4`
+
+***
+
+### `r params$sym.5`
+  
+
+***
